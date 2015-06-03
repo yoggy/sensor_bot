@@ -17,16 +17,33 @@ exec = (res, cmd, args) ->
 		res.send str
 
 module.exports = (robot) ->
-	robot.hear /office (dht.*)$/i, (res) ->
+	robot.hear /(.*) (dht.*)$/i, (res) ->
 		if res.message.room == room_name
-			series = 'office_' + res.match[1]
+			series = res.match[1] + '_' + res.match[2]
 			cmd = './gruff_dht.rb'
 			exec res, cmd, [series]
 
-	robot.hear /home (dht.*)$/i, (res) ->
+	robot.hear /(.*) pir$/i, (res) ->
 		if res.message.room == room_name
-			series = 'home_' + res.match[1]
-			cmd = './gruff_dht.rb'
+			series = res.match[1] + '_pir'
+			cmd = './gruff_pir.rb'
 			exec res, cmd, [series]
 
+	robot.hear /(.*) door$/i, (res) ->
+		if res.message.room == room_name
+			series = res.match[1] + '_door'
+			cmd = './gruff_pir.rb'
+			exec res, cmd, [series]
+
+	robot.hear /(.*) net$/i, (res) ->
+		if res.message.room == room_name
+			series = res.match[1] + '_net'
+			cmd = './gruff_pir.rb'
+			exec res, cmd, [series]
+
+	robot.hear /office rtx1100$/i, (res) ->
+		if res.message.room == room_name
+			series = 'office_rtx1100'
+			cmd = './gruff_rtx.rb'
+			exec res, cmd, [series]
 
