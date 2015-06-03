@@ -30,8 +30,9 @@ end
 usage if ARGV.size == 0
 	
 series_name = ARGV[0]
+column_name = "door"
 
-query_str = "select time, mean(temperature) as temperature, mean(humidity) as humidity from #{series_name} group by time(180m) where time > now() - 7d order asc"
+query_str = "select time, max(#{column_name}) as #{column_name} from #{series_name} group by time(10m) where time > now() - 2d order asc"
 
 gyazo = Gyazo::Client.new
 
@@ -46,7 +47,7 @@ g.line_width = 2
 g.marker_font_size = 16
 g.legend_font_size = 16
 g.theme = {
-	:colors =>  %w(orange),
+	:colors =>  %w(#00ff00),
 	:font_color => 'black',
 	:marker_color => 'black',
 	:background_colors => %w(white white)
@@ -57,55 +58,20 @@ arr = []
 influxdb.query query_str do |name, res|
   res.each do |h|
 	t = Time.at(h["time"])
-	if t.hour == 0
+	if t.hour == 0 && t.min == 0
 	  g.labels[idx] = Time.at(h["time"]).strftime("%m/%d")
-	elsif
+	else
 	  g.labels[idx] = " "
     end
-    arr << h["temperature"].round(2)
+    arr << h[column_name].round(2)
 	idx += 1
   end
 end
-g.data :temperature, arr
-g.minimum_value = arr.min.round() - 1
-g.maximum_value = arr.max.round() + 1
+g.data column_name.to_sym, arr
+g.minimum_value = 0
+g.maximum_value = 1
 g.y_axis_increment = 1 
-g.write("temperature.png");
-url = gyazo.upload("temperature.png", :raw => true);
+g.write(".#{column_name}.png");
+url = gyazo.upload(".#{column_name}.png", :raw => true);
 puts url
 
-#
-# draw humidity line chart
-#
-g = Gruff::Line.new("640x240")
-g.title = "series:" + series_name
-g.title_font_size = 20
-g.dot_radius = 2
-g.line_width = 2
-g.marker_font_size = 16
-g.legend_font_size = 16
-g.theme = {
-	:colors =>  %w(cyan),
-	:font_color => 'black',
-	:marker_color => 'black',
-	:background_colors => %w(white white)
-}
-
-idx = 0;
-arr = []
-influxdb.query query_str do |name, res|
-  res.each do |h|
-	t = Time.at(h["time"])
-	if t.hour == 0
-	  g.labels[idx] = Time.at(h["time"]).strftime("%m/%d")
-	elsif
-	  g.labels[idx] = " "
-    end
-    arr << h["humidity"].round(2)
-	idx += 1
-  end
-end
-g.data :humidity, arr
-g.write("humidity.png");
-url = gyazo.upload("humidity.png", :raw => true);
-puts url
