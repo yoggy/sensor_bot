@@ -1,0 +1,13 @@
+node_modules
+.DS_Store*
+*.swp
+.hubot_history
+run.sh
+Procfile
+bin/
+external-scripts.json
+scripts/example.coffee
+*.png
+hubot-scripts.json
+.editorconfig
+
