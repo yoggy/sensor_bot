@@ -3,18 +3,25 @@
 #
 util = require('util')
 spawn = require('child_process').spawn
-cronJob = require('cron').CronJob
+cron = require('cron').CronJob
 
 room_name = "sensor"
 
 exec = (res, cmd, args) ->
 	console.log "exec : cmd=" + cmd + ", args=" + util.inspect(args)
 	p = spawn cmd, args
-	console.log p
 	p.stdout.on 'data', (data) ->
 		str = data.toString 'UTF-8'  # Buffer -> String
 		console.log "stdout : %s", str
 		res.send str
+
+cron_exec = (robot, cmd, args) ->
+	console.log "cron_exec : cmd=" + cmd + ", args=" + util.inspect(args)
+	p = spawn cmd, args
+	p.stdout.on 'data', (data) ->
+		str = data.toString 'UTF-8'  # Buffer -> String
+		console.log "stdout : %s", str
+		robot.send {room:room_name}, str
 
 module.exports = (robot) ->
 	robot.hear /(.*) (dht.*)$/i, (res) ->
@@ -47,9 +54,36 @@ module.exports = (robot) ->
 			cmd = './gruff_net.rb'
 			exec res, cmd, [series]
 
-	robot.hear /office rtx1100$/i, (res) ->
+	robot.hear /office (rtx.*)$/i, (res) ->
 		if res.message.room == room_name
-			series = 'office_rtx1100'
+			series = 'office_' + res.match[1]
 			cmd = './gruff_rtx.rb'
 			exec res, cmd, [series]
+
+	robot.hear /office (nvr.*)$/i, (res) ->
+		if res.message.room == room_name
+			series = 'office_' + res.match[1]
+			cmd = './gruff_rtx.rb'
+			exec res, cmd, [series]
+
+	cron '0 0 9,21 * * *', ()->
+		cron_exec robot, './gruff_net.rb', ['office_net']
+
+	cron '0 1 9,21 * * *', ()->
+		cron_exec robot, './gruff_rtx.rb', ['office_nvr500']
+
+	cron '0 2 9,21 * * *', ()->
+		cron_exec robot, './gruff_rtx.rb', ['office_rtx1100']
+
+	cron '0 3 9,21 * * *', ()->
+		cron_exec robot, './gruff_door.rb', ['office_door']
+
+	cron '0 4 9,21 * * *', ()->
+		cron_exec robot, './gruff_pir.rb', ['office_pir']
+
+	cron '0 0 22 * * *', ()->
+		cron_exec robot, './gruff_pir.rb', ['home_door']
+
+	cron '0 1 22 * * *', ()->
+		cron_exec robot, './gruff_pir.rb', ['home_pir']
 

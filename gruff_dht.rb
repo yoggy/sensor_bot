@@ -72,7 +72,7 @@ g.maximum_value = arr.max.round() + 1
 g.y_axis_increment = 1 
 g.write("temperature.png");
 url = gyazo.upload("temperature.png", :raw => true);
-puts url
+puts url + ".png"
 
 #
 # draw humidity line chart
@@ -108,5 +108,5 @@ end
 g.data :humidity, arr
 g.write("humidity.png");
 url = gyazo.upload("humidity.png", :raw => true);
-puts url + ".png
+puts url + ".png"
 
