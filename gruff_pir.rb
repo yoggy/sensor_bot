@@ -22,7 +22,6 @@ database = 'sensorsdb'
 
 influxdb = InfluxDB::Client.new(database, influxdb_params)
 
-
 def usage
 	puts "usage : #{$0} series_name"
 	exit 0
@@ -30,9 +29,9 @@ end
 usage if ARGV.size == 0
 	
 series_name = ARGV[0]
-column_name = "door"
+column_name = "pir"
 
-query_str = "select time, max(#{column_name}) as #{column_name} from #{series_name} group by time(10m) where time > now() - 2d order asc"
+query_str = "select time, max(#{column_name}) as #{column_name} from #{series_name} group by time(5m) where time > now() - 3d order asc"
 
 gyazo = Gyazo::Client.new
 
@@ -42,12 +41,12 @@ gyazo = Gyazo::Client.new
 g = Gruff::Line.new("640x180")
 g.title = "series:" + series_name
 g.title_font_size = 20
-g.dot_radius = 0
+g.hide_dots = true
 g.line_width = 2
-g.marker_font_size = 16
-g.legend_font_size = 16
+g.marker_font_size = 14
+g.legend_font_size = 14
 g.theme = {
-	:colors =>  %w(#00ff00),
+	:colors =>  %w(#ff8800),
 	:font_color => 'black',
 	:marker_color => 'black',
 	:background_colors => %w(white white)
@@ -60,6 +59,8 @@ influxdb.query query_str do |name, res|
 	t = Time.at(h["time"])
 	if t.hour == 0 && t.min == 0
 	  g.labels[idx] = Time.at(h["time"]).strftime("%m/%d")
+	elsif t.hour % 3 == 0 && t.min == 0
+	  g.labels[idx] = Time.at(h["time"]).strftime("%H")
 	else
 	  g.labels[idx] = " "
     end
@@ -70,8 +71,8 @@ end
 g.data column_name.to_sym, arr
 g.hide_legend = true
 g.minimum_value = 0
-g.maximum_value = 1
-g.y_axis_increment = 1 
+g.maximum_value = 1 
+g.y_axis_increment = 1
 g.write(".#{column_name}.png");
 url = gyazo.upload(".#{column_name}.png", :raw => true);
 puts url + ".png"

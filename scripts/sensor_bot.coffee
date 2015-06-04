@@ -29,16 +29,22 @@ module.exports = (robot) ->
 			cmd = './gruff_pir.rb'
 			exec res, cmd, [series]
 
+	robot.hear /(.*) cds$/i, (res) ->
+		if res.message.room == room_name
+			series = res.match[1] + '_cds'
+			cmd = './gruff_cds.rb'
+			exec res, cmd, [series]
+
 	robot.hear /(.*) door$/i, (res) ->
 		if res.message.room == room_name
 			series = res.match[1] + '_door'
-			cmd = './gruff_pir.rb'
+			cmd = './gruff_door.rb'
 			exec res, cmd, [series]
 
 	robot.hear /(.*) net$/i, (res) ->
 		if res.message.room == room_name
 			series = res.match[1] + '_net'
-			cmd = './gruff_pir.rb'
+			cmd = './gruff_net.rb'
 			exec res, cmd, [series]
 
 	robot.hear /office rtx1100$/i, (res) ->
