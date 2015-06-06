@@ -6,4 +6,9 @@ export HUBOT_SLACK_CHANNELMODE="blacklist"
 export HUBOT_SLACK_CHANNELS=""
 export HUBOT_SLACK_LINK_NAMES=1
 
-bin/hubot -a slack
+while :
+do
+	./bin/hubot -a slack
+	echo "restart..."
+	sleep 5
+done
