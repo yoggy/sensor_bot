@@ -66,41 +66,19 @@ module.exports = (robot) ->
 			cmd = './gruff_rtx.rb'
 			exec res, cmd, [series]
 
-	robot.hear /office (backup*)$/i, (res) ->
+	robot.hear /office backup$/i, (res) ->
 		if res.message.room == room_name
-			series = 'office_' + res.match[1]
+			series = 'office_backup'
 			cmd = './gruff_backup.rb'
 			exec res, cmd, [series]
 
-	new cron '0 0 9,21 * * *', ()->
+	new cron '0 0 10,18 * * *', ()->
 			cron_exec robot, './gruff_net.rb', ['office_net']
-		, null, true, "Asia/Tokyo"
-
-	new cron '0 1 9,21 * * *', ()->
 			cron_exec robot, './gruff_rtx.rb', ['office_nvr500']
-		, null, true
-
-	new cron '0 2 9,21 * * *', ()->
 			cron_exec robot, './gruff_rtx.rb', ['office_rtx1100']
-		, null, true, "Asia/Tokyo"
-
-	new cron '0 3 9,21 * * *', ()->
+			cron_exec robot, './gruff_backup.rb', ['office_backup']
 			cron_exec robot, './gruff_door.rb', ['office_door']
 		, null, true, "Asia/Tokyo"
 
-	new cron '0 4 9,21 * * *', ()->
-			cron_exec robot, './gruff_pir.rb', ['office_pir']
-		, null, true, "Asia/Tokyo"
 
-	new cron '0 5 9,21 * * *', ()->
-			cron_exec robot, './gruff_backup.rb', ['office_backup']
-		, null, true, "Asia/Tokyo"
-
-	new cron '0 0 22 * * *', ()->
-			cron_exec robot, './gruff_pir.rb', ['home_door']
-		, null, true
-
-	new cron '0 1 22 * * *', ()->
-			cron_exec robot, './gruff_pir.rb', ['home_pir']
-		, null, true
 
