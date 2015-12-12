@@ -32,7 +32,7 @@ usage if ARGV.size == 0
 series_name = ARGV[0]
 column_name = "backup_total_time"
 
-query_str = "select time from #{series_name} where time > now() - 14d order asc"
+query_str = "select #{column_name} from #{series_name} where time > now() - 14d order asc"
 
 gyazo = Gyazo::Client.new
 
