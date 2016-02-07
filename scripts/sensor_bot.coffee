@@ -42,6 +42,12 @@ module.exports = (robot) ->
 			cmd = './gruff_cds.rb'
 			exec res, cmd, [series]
 
+	robot.hear /(.*) co2$/i, (res) ->
+		if res.message.room == room_name
+			series = res.match[1] + '_co2'
+			cmd = './gruff_co2.rb'
+			exec res, cmd, [series]
+
 	robot.hear /(.*) door$/i, (res) ->
 		if res.message.room == room_name
 			series = res.match[1] + '_door'
@@ -78,6 +84,7 @@ module.exports = (robot) ->
 			cron_exec robot, './gruff_rtx.rb', ['office_rtx1100']
 			cron_exec robot, './gruff_backup.rb', ['office_backup']
 			cron_exec robot, './gruff_door.rb', ['office_door']
+			cron_exec robot, './gruff_co2.rb', ['office_co2']
 		, null, true, "Asia/Tokyo"
 
 
