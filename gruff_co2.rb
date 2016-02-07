@@ -32,7 +32,7 @@ usage if ARGV.size == 0
 series_name = ARGV[0]
 column_name = "co2"
 
-query_str = "select time, max(#{column_name}) as #{column_name} from #{series_name} group by time(10m) where time > now() - 2d order asc"
+query_str = "select time, mean(#{column_name}) as #{column_name} from #{series_name} group by time(10m) where time > now() - 2d order asc"
 
 gyazo = Gyazo::Client.new
 
@@ -46,9 +46,9 @@ g.hide_dots = true
 g.line_width = 3
 g.marker_font_size = 14
 g.legend_font_size = 14
-g.minimum_value = 0
-g.maximum_value = 1200
-g.y_axis_increment = 200
+#g.minimum_value = 0
+#g.maximum_value = 1200
+#g.y_axis_increment = 200
 g.theme = {
 	:colors =>  %w(#ff00ff),
 	:font_color => 'black',
@@ -63,7 +63,7 @@ influxdb.query query_str do |name, res|
 	t = Time.at(h["time"])
 	if t.hour == 0 && t.min == 0
 	  g.labels[idx] = Time.at(h["time"]).strftime("%m/%d")
-	elsif t.hour % 12 == 0 && t.min == 0
+	elsif t.hour % 6 == 0 && t.min == 0
 	  g.labels[idx] = Time.at(h["time"]).strftime("%H")
 	else
 	  g.labels[idx] = " "
