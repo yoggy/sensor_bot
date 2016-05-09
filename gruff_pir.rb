@@ -75,5 +75,5 @@ g.maximum_value = 1
 g.y_axis_increment = 1
 g.write(".#{column_name}.png");
 url = gyazo.upload(".#{column_name}.png", :raw => true);
-puts url + ".png"
+puts "#{series_name} : #{url}.png"
 

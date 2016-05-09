@@ -72,5 +72,5 @@ end
 g.data column_name.to_sym, arr
 g.write(".#{column_name}.png");
 url = gyazo.upload(".#{column_name}.png", :raw => true);
-puts url + ".png"
+puts "#{series_name} : #{url}.png"
 

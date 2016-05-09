@@ -79,5 +79,5 @@ g.data :rx_kbps, arr_rx
 
 g.write(".#{series_name}.png");
 url = gyazo.upload(".#{series_name}.png", :raw => true);
-puts url + ".png"
+puts "#{series_name} : #{url}.png"
 

@@ -108,5 +108,5 @@ end
 g.data :humidity, arr
 g.write("humidity.png");
 url = gyazo.upload("humidity.png", :raw => true);
-puts url + ".png"
+puts "#{series_name} : #{url}.png"
 
