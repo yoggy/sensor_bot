@@ -31,7 +31,9 @@ usage if ARGV.size == 0
 	
 series_name = ARGV[0]
 
-query_str = "select time, mean(temperature) as temperature, mean(humidity) as humidity from #{series_name} group by time(180m) where time > now() - 7d order asc"
+query_str1 = "select time, mean(temperature) as temperature from #{series_name} group by time(180m) where time > now() - 7d order asc"
+
+query_str2 = "select time, mean(humidity) as humidity from #{series_name} group by time(180m) where time > now() - 7d order asc"
 
 gyazo = Gyazo::Client.new
 
@@ -54,7 +56,7 @@ g.theme = {
 
 idx = 0;
 arr = []
-influxdb.query query_str do |name, res|
+influxdb.query query_str1 do |name, res|
   res.each do |h|
 	t = Time.at(h["time"])
 	if t.hour == 0
@@ -72,7 +74,7 @@ g.maximum_value = arr.max.round() + 1
 g.y_axis_increment = 1 
 g.write("temperature.png");
 url = gyazo.upload("temperature.png", :raw => true);
-puts url + ".png"
+puts "#{series_name} temperature : #{url}.png"
 
 #
 # draw humidity line chart
@@ -93,7 +95,7 @@ g.theme = {
 
 idx = 0;
 arr = []
-influxdb.query query_str do |name, res|
+influxdb.query query_str2 do |name, res|
   res.each do |h|
 	t = Time.at(h["time"])
 	if t.hour == 0
@@ -108,5 +110,5 @@ end
 g.data :humidity, arr
 g.write("humidity.png");
 url = gyazo.upload("humidity.png", :raw => true);
-puts "#{series_name} : #{url}.png"
+puts "#{series_name} humidity : #{url}.png"
 
